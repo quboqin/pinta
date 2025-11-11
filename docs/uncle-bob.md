@@ -83,14 +83,51 @@ This project includes a `docs` folder containing the following Markdown document
    - Spec Kits: Checks for `uv` installation, provides install instructions if missing
    - Creates `.specify/INSTALL_INSTRUCTIONS.md` if `uv` not available
 
-### 7. MCPS, Hooks, and Custom Commands Installation
+### 7. MCPS, Hooks, and Custom Commands Installation ✅ IMPLEMENTED
 
 **Requirement**: Allow users to select and install necessary MCPS (Model Context Protocol Servers), hooks, and custom commands into their projects.
 
-**Features to implement**:
+**Implemented Features**:
 
-1. **MCPS Selection**: Multi-select interface for popular MCP servers (filesystem, github, context7, etc.)
-2. **Hooks Selection**: Multi-select interface for Claude Code hooks (pre-commit, post-commit, user-prompt-submit, etc.)
-3. **Custom Commands**: Multi-select interface for common slash commands and workflows
-4. **Installation**: Automatically configure and install selected features into the project
-5. **Documentation**: Generate appropriate documentation for installed features
+1. **MCPS Selection**: Multi-select interface for popular MCP servers
+   - **Filesystem**: File system access for reading/writing files
+   - **GitHub**: GitHub API integration (requires GITHUB_PERSONAL_ACCESS_TOKEN)
+   - **Context7**: Access to up-to-date library documentation and examples
+   - **Git**: Git operations and repository management
+   - **Fetch**: Fetch content from URLs and web APIs
+   - **PostgreSQL**: PostgreSQL database access (requires connection string)
+   - **SQLite**: SQLite database operations
+   - Creates `.claude/mcp-config.json` with server configurations
+   - Generates `.claude/MCP-README.md` with usage instructions
+
+2. **Hooks Selection**: Multi-select interface for Claude Code hooks
+   - **pre-commit**: Runs linting and formatting checks before each commit
+   - **post-commit**: Runs after each commit for notifications or automated tasks
+   - **user-prompt-submit**: Validates or modifies user prompts before sending to Claude
+   - **tool-result**: Processes or validates tool results after execution
+   - Creates executable hook scripts in `.claude/hooks/`
+   - Generates `.claude/hooks/README.md` with documentation
+   - Updates package.json with format:check script for pre-commit hook
+
+3. **Custom Commands**: Multi-select interface for common slash commands
+   - **review-pr**: Comprehensive pull request code review
+   - **generate-tests**: Generate unit tests for selected code
+   - **refactor**: Refactor code to improve quality and maintainability
+   - **documentation**: Generate comprehensive documentation
+   - **deploy**: Deployment preparation checklist
+   - Creates command markdown files in `.claude/commands/`
+   - Generates `.claude/commands/README.md` with usage guide
+
+4. **Installation**: Automatically configures and installs selected features
+   - MCP servers: `installMCPServers()` creates JSON config and README
+   - Hooks: `installHooks()` creates executable bash scripts and README
+   - Commands: `installCustomCommands()` creates markdown files and README
+   - All features integrated into project generation flow
+
+5. **Documentation**: Comprehensive documentation generated for all features
+   - Each feature category has its own README with:
+     - Description of installed features
+     - Usage instructions
+     - Configuration requirements
+     - Best practices
+     - Links to official documentation

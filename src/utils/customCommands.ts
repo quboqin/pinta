@@ -184,12 +184,15 @@ export async function installCustomCommands(
     return
   }
 
+  console.log('\n⚡ Setting up Custom Commands...\n')
+
   // Create .claude/commands directory
   const commandsDir = path.join(projectPath, '.claude', 'commands')
   await fs.ensureDir(commandsDir)
 
   // Install each command
   for (const command of commands) {
+    console.log(`   /${command} - Creating slash command...`)
     const commandContent = getCommandContent(command)
     const commandPath = path.join(commandsDir, `${command}.md`)
 
@@ -200,6 +203,10 @@ export async function installCustomCommands(
   const readmeContent = generateCommandsReadme(commands)
   const readmePath = path.join(commandsDir, 'README.md')
   await fs.writeFile(readmePath, readmeContent)
+
+  console.log('\n✅ Custom commands installed successfully!')
+  console.log(`📂 Command files saved to: .claude/commands/`)
+  console.log(`📖 Documentation: .claude/commands/README.md\n`)
 }
 
 /**

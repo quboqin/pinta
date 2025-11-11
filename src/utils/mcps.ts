@@ -64,6 +64,8 @@ export async function installMCPServers(projectPath: string, servers: MCPServer[
     return
   }
 
+  console.log('\n🔌 Setting up MCP Servers...\n')
+
   // Create .claude directory
   const claudeDir = path.join(projectPath, '.claude')
   await fs.ensureDir(claudeDir)
@@ -74,6 +76,7 @@ export async function installMCPServers(projectPath: string, servers: MCPServer[
   }
 
   for (const server of servers) {
+    console.log(`   📦 Configuring ${server} MCP server...`)
     mcpConfig.mcpServers[server] = getMCPServerConfig(server)
   }
 
@@ -85,6 +88,10 @@ export async function installMCPServers(projectPath: string, servers: MCPServer[
   const readmeContent = generateMCPReadme(servers)
   const readmePath = path.join(claudeDir, 'MCP-README.md')
   await fs.writeFile(readmePath, readmeContent)
+
+  console.log('\n✅ MCP Servers configured successfully!')
+  console.log(`📄 Configuration saved to: .claude/mcp-config.json`)
+  console.log(`📖 Documentation: .claude/MCP-README.md\n`)
 }
 
 /**

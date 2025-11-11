@@ -104,12 +104,15 @@ export async function installHooks(projectPath: string, hooks: HookType[]): Prom
     return
   }
 
+  console.log('\n🪝 Setting up Claude Code Hooks...\n')
+
   // Create .claude/hooks directory
   const hooksDir = path.join(projectPath, '.claude', 'hooks')
   await fs.ensureDir(hooksDir)
 
   // Install each hook
   for (const hook of hooks) {
+    console.log(`   📝 Installing ${hook} hook...`)
     const hookScript = getHookScript(hook)
     const hookPath = path.join(hooksDir, `${hook}.sh`)
 
@@ -126,6 +129,10 @@ export async function installHooks(projectPath: string, hooks: HookType[]): Prom
   if (hooks.includes('pre-commit')) {
     await updatePackageJsonForHooks(projectPath)
   }
+
+  console.log('\n✅ Hooks installed successfully!')
+  console.log(`📂 Hook scripts saved to: .claude/hooks/`)
+  console.log(`📖 Documentation: .claude/hooks/README.md\n`)
 }
 
 /**
