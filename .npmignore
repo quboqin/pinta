@@ -1,0 +1,35 @@
+# Source files
+src/
+tests/
+*.test.ts
+
+# Configuration
+tsconfig.json
+jest.config.js
+.eslintrc.json
+.prettierrc
+.prettierignore
+
+# Documentation (keep only README)
+docs/
+CLAUDE.md
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+.git/
+.gitignore
+coverage/
+node_modules/
