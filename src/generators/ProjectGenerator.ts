@@ -8,6 +8,7 @@ import { createDocumentation } from '../utils/documentation'
 import { setupCodeQuality } from '../utils/codeQuality'
 import { setupVSCode } from '../utils/vscode'
 import { createClaudeMd } from '../utils/claudeMd'
+import { copyTemplate, getTsConfigForFramework } from '../utils/templates'
 
 export class ProjectGenerator {
   private config: ProjectConfig
@@ -59,6 +60,12 @@ export class ProjectGenerator {
     // Create package.json
     const packageJson = createPackageJson(this.config)
     await fs.writeJson(path.join(this.projectPath, 'package.json'), packageJson, { spaces: 2 })
+
+    // Setup TypeScript configuration
+    await this.setupTypeScript()
+
+    // Copy framework templates
+    await this.copyFrameworkTemplates()
 
     // Create README
     await this.createReadme()
@@ -253,5 +260,38 @@ MIT
     }
 
     return stack.join('\n') || 'No specific tech stack configured'
+  }
+
+  private async setupTypeScript(): Promise<void> {
+    const useTypeScript = this.config.frontend?.typescript || this.config.backend?.typescript
+
+    if (!useTypeScript) {
+      return
+    }
+
+    let tsConfig
+    if (this.config.frontend?.framework !== 'none') {
+      tsConfig = getTsConfigForFramework(this.config.frontend!.framework, false)
+    } else if (this.config.backend?.framework !== 'none') {
+      tsConfig = getTsConfigForFramework(this.config.backend!.framework, true)
+    }
+
+    if (tsConfig) {
+      await fs.writeJson(path.join(this.projectPath, 'tsconfig.json'), tsConfig, { spaces: 2 })
+    }
+  }
+
+  private async copyFrameworkTemplates(): Promise<void> {
+    // Copy backend templates
+    if (this.config.backend?.framework !== 'none') {
+      const srcPath = path.join(this.projectPath, 'src')
+      await copyTemplate(this.config.backend!.framework, srcPath, this.config)
+    }
+
+    // Copy frontend templates
+    if (this.config.frontend?.framework !== 'none') {
+      const srcPath = path.join(this.projectPath, 'src')
+      await copyTemplate(this.config.frontend!.framework, srcPath, this.config)
+    }
   }
 }

@@ -57,12 +57,17 @@ export function createPackageJson(config: ProjectConfig): PackageJson {
   if (config.backend?.framework === 'express') {
     packageJson.dependencies = {
       ...packageJson.dependencies,
-      express: '^4.18.2'
+      express: '^4.18.2',
+      cors: '^2.8.5',
+      helmet: '^7.1.0',
+      morgan: '^1.10.0'
     }
     if (config.backend.typescript) {
       packageJson.devDependencies = {
         ...packageJson.devDependencies,
-        '@types/express': '^4.17.21'
+        '@types/express': '^4.17.21',
+        '@types/cors': '^2.8.17',
+        '@types/morgan': '^1.9.9'
       }
     }
   }
