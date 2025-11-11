@@ -49,48 +49,123 @@ async function commandExists(command: string): Promise<boolean> {
  * Install BMad Method
  */
 async function installBMad(projectPath: string): Promise<void> {
-  console.log('📦 Installing BMad Method...')
+  console.log('📦 Setting up BMad Method installation instructions...')
 
-  try {
-    // Run npx bmad-method@alpha install
-    await execa('npx', ['bmad-method@alpha', 'install'], {
-      cwd: projectPath,
-      stdio: 'inherit'
-    })
+  // Create instructions file since BMad installer is interactive
+  const bmadDir = path.join(projectPath, 'docs', 'design-flows', 'bmad')
+  await fs.ensureDir(bmadDir)
 
-    console.log('✅ BMad Method installed successfully!')
-  } catch (error) {
-    console.error('❌ Failed to install BMad Method:', error)
-    throw new Error(
-      'BMad Method installation failed. Please install manually using: npx bmad-method@alpha install'
-    )
-  }
+  const instructionsPath = path.join(bmadDir, 'INSTALL_INSTRUCTIONS.md')
+  await fs.writeFile(
+    instructionsPath,
+    `# BMad Method Installation Instructions
+
+BMad Method requires an interactive installation process. Please follow these steps after your Pinta project is created:
+
+## Installation Steps
+
+### 1. Navigate to your project directory
+\`\`\`bash
+cd ${path.basename(projectPath)}
+\`\`\`
+
+### 2. Run the BMad installer
+\`\`\`bash
+npx bmad-method@alpha install
+\`\`\`
+
+### 3. Follow the interactive prompts
+The installer will ask you to:
+- Select modules (BMM, BMB, CIS)
+- Configure your name and preferences
+- Choose language settings
+- Set up IDE integration
+
+### 4. Verify installation
+After installation, you should see a \`bmad/\` directory in your project with:
+- \`bmad/core/\` - Core framework + BMad Master agent
+- \`bmad/bmm/\` - BMad Method (12 agents, 34 workflows)
+- \`bmad/bmb/\` - BMad Builder (optional)
+- \`bmad/cis/\` - Creative Intelligence Suite (optional)
+- \`bmad/_cfg/\` - Your customization directory
+
+## Getting Started
+
+After installation:
+1. Load any agent from \`bmad/\` in your AI assistant (Claude Code, Cursor, etc.)
+2. Run \`*workflow-init\` to set up your project workflow
+3. Choose your planning track (Quick Flow, BMad Method, or Enterprise)
+
+## Documentation
+
+- **Repository**: https://github.com/bmad-code-org/BMAD-METHOD
+- **Quick Start**: https://github.com/bmad-code-org/BMAD-METHOD#-quick-start
+- **Documentation Hub**: https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmm/docs
+
+## Support
+
+- **Discord**: https://discord.gg/gk8jAdXWmj
+- **GitHub Issues**: https://github.com/bmad-code-org/BMAD-METHOD/issues
+- **YouTube**: https://www.youtube.com/@BMadCode
+
+## Alternative: Install Stable Version
+
+If you prefer the stable v4 instead of alpha:
+\`\`\`bash
+npx bmad-method install
+\`\`\`
+
+## Troubleshooting
+
+If installation fails:
+1. Ensure Node.js v20+ is installed
+2. Check you have write permissions in the project directory
+3. Try clearing npm cache: \`npm cache clean --force\`
+4. See the official docs for more help
+`
+  )
+
+  console.log(
+    `📄 BMad installation instructions created at: docs/design-flows/bmad/INSTALL_INSTRUCTIONS.md`
+  )
+  console.log(
+    'ℹ️  BMad requires interactive setup - please run the installer after project creation'
+  )
 }
 
 /**
  * Install Spec Kits
  */
 async function installSpecKits(projectPath: string): Promise<void> {
-  console.log('📦 Installing Spec Kits...')
+  console.log('📦 Setting up Spec Kits installation instructions...')
+
+  // Create instructions file
+  const specKitsDir = path.join(projectPath, 'docs', 'design-flows', 'spec-kits')
+  await fs.ensureDir(specKitsDir)
 
   // Check if uv is installed
   const hasUv = await commandExists('uv')
+  const uvStatus = hasUv ? '✅ Detected' : '❌ Not installed'
 
-  if (!hasUv) {
-    console.warn('⚠️  uv is not installed. Installing Spec Kits requires uv.')
-    console.log('Please install uv first: curl -LsSf https://astral.sh/uv/install.sh | sh')
-    console.log('Or visit: https://docs.astral.sh/uv/')
+  const instructionsPath = path.join(specKitsDir, 'INSTALL_INSTRUCTIONS.md')
+  await fs.writeFile(
+    instructionsPath,
+    `# Spec Kits Installation Instructions
 
-    // Create instructions file
-    const instructionsPath = path.join(projectPath, '.specify', 'INSTALL_INSTRUCTIONS.md')
-    await fs.ensureDir(path.dirname(instructionsPath))
-    await fs.writeFile(
-      instructionsPath,
-      `# Spec Kits Installation Instructions
+Spec Kits requires \`uv\` Python package manager. Please follow these steps after your Pinta project is created:
 
-Spec Kits requires \`uv\` to be installed. Please follow these steps:
+## Prerequisites Check
 
-## 1. Install uv
+- **uv**: ${uvStatus}
+- **Python**: 3.11+ required
+
+## Installation Steps
+
+### 1. Install uv (if not already installed)
+
+${
+  !hasUv
+    ? `**You need to install uv first:**
 
 **macOS/Linux:**
 \`\`\`bash
@@ -102,95 +177,100 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 \`\`\`
 
-Or visit: https://docs.astral.sh/uv/
-
-## 2. Install Spec Kits
-
-Once uv is installed, run:
-
+After installation, restart your terminal or run:
 \`\`\`bash
-uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+source ~/.bashrc  # or ~/.zshrc
 \`\`\`
 
-## 3. Initialize Spec Kits
+**More info**: https://docs.astral.sh/uv/
 
-In your project directory, run:
-
-\`\`\`bash
-specify init --here --ai claude --force
-\`\`\`
-
-## More Information
-
-- GitHub: https://github.com/github/spec-kit
-- Documentation: https://github.github.io/spec-kit/
 `
-    )
+    : `uv is already installed on your system. You can proceed to step 2.
 
-    console.log(`📄 Installation instructions saved to: .specify/INSTALL_INSTRUCTIONS.md`)
-    return
-  }
+`
+}### 2. Install Spec Kits CLI
 
-  try {
-    // Install specify-cli using uv
-    console.log('Installing specify-cli tool...')
-    await execa(
-      'uv',
-      ['tool', 'install', 'specify-cli', '--from', 'git+https://github.com/github/spec-kit.git'],
-      {
-        stdio: 'inherit'
-      }
-    )
-
-    // Initialize in project directory
-    console.log('Initializing Spec Kits in project...')
-    await execa('specify', ['init', '--here', '--ai', 'claude', '--force'], {
-      cwd: projectPath,
-      stdio: 'inherit'
-    })
-
-    console.log('✅ Spec Kits installed successfully!')
-  } catch (error) {
-    console.error('❌ Failed to install Spec Kits:', error)
-
-    // Create fallback instructions
-    const instructionsPath = path.join(projectPath, '.specify', 'INSTALL_INSTRUCTIONS.md')
-    await fs.ensureDir(path.dirname(instructionsPath))
-    await fs.writeFile(
-      instructionsPath,
-      `# Spec Kits Installation Failed
-
-Automatic installation failed. Please install manually:
-
-## Manual Installation Steps
-
-### 1. Install specify-cli
 \`\`\`bash
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 \`\`\`
 
-### 2. Initialize in this project
+### 3. Navigate to your project directory
+
 \`\`\`bash
-cd ${projectPath}
+cd ${path.basename(projectPath)}
+\`\`\`
+
+### 4. Initialize Spec Kits in your project
+
+\`\`\`bash
 specify init --here --ai claude --force
 \`\`\`
 
-## Alternative: Use without installation
+This will create a \`.specify/\` directory with:
+- Project constitution template
+- Spec, plan, and task templates
+- AI agent slash commands (/speckit.*)
+- Scripts for feature management
+
+### 5. Verify installation
+
+After initialization, you should see:
+- \`.specify/memory/\` - Project constitution and memory
+- \`.specify/scripts/\` - Automation scripts
+- \`.specify/templates/\` - Spec, plan, and task templates
+
+## Alternative: One-time Usage
+
+If you prefer not to install globally, you can use uvx:
+
 \`\`\`bash
+cd ${path.basename(projectPath)}
 uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai claude --force
 \`\`\`
 
-## More Information
-- GitHub: https://github.com/github/spec-kit
-- Documentation: https://github.github.io/spec-kit/
+## Getting Started
 
-## Error Details
-${error}
+After installation, launch your AI assistant and use:
+
+1. \`/speckit.constitution\` - Create project principles
+2. \`/speckit.specify\` - Create feature specifications
+3. \`/speckit.plan\` - Create technical plans
+4. \`/speckit.tasks\` - Break down into tasks
+5. \`/speckit.implement\` - Execute implementation
+
+## Documentation
+
+- **Repository**: https://github.com/github/spec-kit
+- **Complete Guide**: https://github.com/github/spec-kit/blob/main/spec-driven.md
+- **Documentation**: https://github.github.io/spec-kit/
+- **Video Overview**: https://www.youtube.com/watch?v=a9eR1xsfvHg
+
+## Supported AI Agents
+
+✅ Claude Code, GitHub Copilot, Gemini CLI, Cursor, Windsurf, Qwen, and more
+
+## Troubleshooting
+
+**If \`uv\` installation fails:**
+- Check Python version: \`python3 --version\` (need 3.11+)
+- Try with sudo if permission denied
+- See https://docs.astral.sh/uv/ for platform-specific help
+
+**If \`specify init\` fails:**
+- Make sure you're in the project directory
+- Check that uv tool directory is in PATH
+- Try the uvx alternative command above
 `
-    )
+  )
 
-    console.log(`📄 Manual installation instructions saved to: .specify/INSTALL_INSTRUCTIONS.md`)
-  }
+  console.log(
+    `📄 Spec Kits installation instructions created at: docs/design-flows/spec-kits/INSTALL_INSTRUCTIONS.md`
+  )
+  console.log(
+    hasUv
+      ? 'ℹ️  uv detected - you can install Spec Kits after project creation'
+      : '⚠️  uv not found - please install uv first, then run the Spec Kits installer'
+  )
 }
 
 /**
@@ -201,18 +281,17 @@ export async function installDesignFlows(projectPath: string, flows: DesignFlow[
     return
   }
 
-  console.log('\n🎨 Installing Design Flows...\n')
+  console.log('\n🎨 Setting up Design Flows...\n')
 
   // Create design-flows directory for documentation
   const designFlowsDir = path.join(projectPath, 'docs', 'design-flows')
   await fs.ensureDir(designFlowsDir)
 
-  // Install each design flow
+  // Setup each design flow
   for (const flow of flows) {
     const info = getDesignFlowInfo(flow)
-    console.log(`\n📚 Installing ${info.name}...`)
-    console.log(`   Repository: ${info.repo}`)
-    console.log(`   Command: ${info.installCmd}\n`)
+    console.log(`\n📚 Preparing ${info.name}...`)
+    console.log(`   Repository: ${info.repo}\n`)
 
     try {
       if (flow === 'bmad') {
@@ -221,75 +300,38 @@ export async function installDesignFlows(projectPath: string, flows: DesignFlow[
         await installSpecKits(projectPath)
       }
 
-      // Create installation documentation
+      // Note: Installation instructions are created by the individual install functions
       const flowDir = path.join(designFlowsDir, flow)
       await fs.ensureDir(flowDir)
 
-      const installDoc = `# ${info.name} - Installed
+      const readmeDoc = `# ${info.name} - Ready to Install
 
-This project has ${info.name} installed and configured.
+${info.name} is configured for this project. Follow the installation instructions to complete setup.
 
 ## Repository
 ${info.repo}
 
-## Installation Command Used
+## Next Steps
+
+📄 **See [INSTALL_INSTRUCTIONS.md](./INSTALL_INSTRUCTIONS.md) for complete installation steps**
+
+## Quick Summary
+
+**Command to run after Pinta project creation:**
+
 \`\`\`bash
 ${info.installCmd}
 \`\`\`
 
-${info.initCmd ? `## Initialization Command\n\`\`\`bash\n${info.initCmd}\n\`\`\`\n` : ''}
-
-## What Was Installed
-
-${
-  flow === 'bmad'
-    ? `- \`bmad/\` directory with the complete BMad framework
-- Core agents and workflows
-- BMad Method module (BMM) with 12 specialized agents
-- 34 workflows for AI-driven agile development
-- Configuration in \`bmad/_cfg/\` for customization
-
-## Getting Started
-
-1. Load any agent from \`bmad/\` in your AI assistant (Claude Code, Cursor, etc.)
-2. Run \`*workflow-init\` to set up your project workflow
-3. Follow the Quick Start guide: https://github.com/bmad-code-org/BMAD-METHOD#-quick-start
+${info.initCmd ? `\n**Initialization:**\n\n\`\`\`bash\n${info.initCmd}\n\`\`\`\n` : ''}
 
 ## Documentation
 
-- Complete documentation: https://github.com/bmad-code-org/BMAD-METHOD
-- Quick Start: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmm/docs/quick-start.md
-- Agents Guide: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmm/docs/agents-guide.md`
-    : `- \`.specify/\` directory with Spec Kit templates and scripts
-- Project constitution template
-- Spec, plan, and task templates
-- AI agent slash commands (/speckit.*)
-- Scripts for managing features and specifications
-
-## Getting Started
-
-1. Launch your AI assistant in the project directory
-2. Use \`/speckit.constitution\` to create project principles
-3. Use \`/speckit.specify\` to create specifications
-4. Use \`/speckit.plan\` to create technical plans
-5. Use \`/speckit.tasks\` to break down into tasks
-6. Use \`/speckit.implement\` to execute implementation
-
-## Documentation
-
-- Complete guide: https://github.com/github/spec-kit/blob/main/spec-driven.md
-- Repository: https://github.com/github/spec-kit
-- Documentation: https://github.github.io/spec-kit/`
-}
-
-## Support
-
-For issues or questions:
-- GitHub Issues: ${info.repo}/issues
-- Documentation: ${info.repo}#readme
+- Repository: ${info.repo}
+- ${flow === 'bmad' ? 'Quick Start: https://github.com/bmad-code-org/BMAD-METHOD#-quick-start' : 'Complete Guide: https://github.com/github/spec-kit/blob/main/spec-driven.md'}
 `
 
-      await fs.writeFile(path.join(flowDir, 'INSTALLED.md'), installDoc)
+      await fs.writeFile(path.join(flowDir, 'README.md'), readmeDoc)
     } catch (error) {
       console.error(`❌ Failed to install ${info.name}:`, error)
       // Continue with other flows even if one fails
@@ -301,16 +343,18 @@ For issues or questions:
   const readmePath = path.join(designFlowsDir, 'README.md')
   await fs.writeFile(readmePath, readmeContent)
 
-  console.log('\n✅ Design Flows installation complete!\n')
+  console.log('\n✅ Design Flows setup complete!\n')
+  console.log('📋 Installation instructions have been created in docs/design-flows/')
+  console.log('👉 Please follow the instructions after project creation to complete installation\n')
 }
 
 /**
- * Generate README for installed design flows
+ * Generate README for design flows setup
  */
 function generateDesignFlowsReadme(flows: DesignFlow[]): string {
-  let readme = `# Design Flows - Installed
+  let readme = `# Design Flows - Ready to Install
 
-This project has the following AI design workflows installed:
+This project is configured with the following AI design workflows. Please complete the installation steps for each flow you selected:
 
 `
 
@@ -320,29 +364,34 @@ This project has the following AI design workflows installed:
     readme += `## ${flowName}\n\n`
     readme += `${getDesignFlowDescription(flow)}\n\n`
     readme += `**Repository**: [${info.repo}](${info.repo})\n\n`
-    readme += `**Installation Guide**: [${flow}/INSTALLED.md](./${flow}/INSTALLED.md)\n\n`
+    readme += `**Installation Instructions**: 📄 [${flow}/INSTALL_INSTRUCTIONS.md](./${flow}/INSTALL_INSTRUCTIONS.md)\n\n`
+    readme += `**Quick Reference**: [${flow}/README.md](./${flow}/README.md)\n\n`
   })
 
-  readme += `## Installed Tools
+  readme += `## Installation Overview
 
 `
 
   if (flows.includes('bmad')) {
     readme += `### BMad Method
 
-The BMad Method has been installed in the \`bmad/\` directory.
+**Installation Command:**
+\`\`\`bash
+npx bmad-method@alpha install
+\`\`\`
 
-**Key Components:**
-- **bmad/core/** - Core framework with BMad Master agent
-- **bmad/bmm/** - BMad Method module (12 agents, 34 workflows)
-- **bmad/_cfg/** - Your customization directory
+**What Will Be Installed:**
+- \`bmad/\` directory with complete framework
+- 12 specialized AI agents (PM, Architect, Developer, etc.)
+- 34 workflows for AI-driven agile development
+- Customization directory in \`bmad/_cfg/\`
 
-**Next Steps:**
+**After Installation:**
 1. Load any agent from \`bmad/\` in your AI assistant
-2. Run \`*workflow-init\` to initialize your workflow
-3. Choose your planning track (Quick Flow, BMad Method, or Enterprise)
+2. Run \`*workflow-init\` to set up your workflow
+3. Choose your planning track
 
-**Documentation:** [bmad/INSTALLED.md](./bmad/INSTALLED.md)
+📄 [Full Instructions](./bmad/INSTALL_INSTRUCTIONS.md)
 
 `
   }
@@ -350,20 +399,29 @@ The BMad Method has been installed in the \`bmad/\` directory.
   if (flows.includes('spec-kits')) {
     readme += `### Spec Kits
 
-Spec Kits has been installed in the \`.specify/\` directory.
+**Installation Commands:**
+\`\`\`bash
+# 1. Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-**Key Components:**
-- **.specify/memory/** - Project constitution and memory
-- **.specify/scripts/** - Automation scripts
-- **.specify/templates/** - Spec, plan, and task templates
+# 2. Install Spec Kits CLI
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
-**Next Steps:**
-1. Launch your AI assistant in the project directory
-2. Use \`/speckit.constitution\` to establish project principles
-3. Use \`/speckit.specify\` to create feature specifications
-4. Follow the spec-driven development workflow
+# 3. Initialize in your project
+specify init --here --ai claude --force
+\`\`\`
 
-**Documentation:** [spec-kits/INSTALLED.md](./spec-kits/INSTALLED.md)
+**What Will Be Installed:**
+- \`.specify/\` directory with templates and scripts
+- AI agent slash commands (/speckit.*)
+- Project constitution, spec, plan, and task templates
+
+**After Installation:**
+1. Launch your AI assistant
+2. Use \`/speckit.constitution\` to create principles
+3. Use \`/speckit.specify\` to create specifications
+
+📄 [Full Instructions](./spec-kits/INSTALL_INSTRUCTIONS.md)
 
 `
   }
@@ -382,9 +440,18 @@ You can use both methodologies together:
 - **Spec Kits**: https://github.com/github/spec-kit
 - **Discord (BMad)**: https://discord.gg/gk8jAdXWmj
 
+## Important Notes
+
+⚠️ **BMad Installation**: The BMad installer is interactive and will ask you questions during setup. Make sure to complete the Pinta project creation first, then run the BMad installer.
+
+⚠️ **Spec Kits Prerequisites**: Spec Kits requires Python 3.11+ and the \`uv\` package manager. Install \`uv\` first if you don't have it.
+
 ## Troubleshooting
 
-If you encounter any installation issues, check the individual INSTALLED.md files for each flow for detailed troubleshooting steps and manual installation instructions.
+If you encounter any installation issues:
+- Check the individual INSTALL_INSTRUCTIONS.md files in each flow directory
+- Verify prerequisites are installed (Node.js 20+ for BMad, Python 3.11+ and uv for Spec Kits)
+- See the official documentation links above for platform-specific help
 `
 
   return readme
