@@ -44,10 +44,22 @@ out/
   await fs.writeFile(path.join(projectPath, '.prettierignore'), prettierIgnore)
 }
 
+interface ESLintConfig {
+  env: Record<string, boolean>
+  extends: string[]
+  parser?: string
+  parserOptions: {
+    ecmaVersion: string
+    sourceType: string
+  }
+  plugins?: string[]
+  rules: Record<string, string | [string, Record<string, string[]>]>
+}
+
 async function createESLintConfig(projectPath: string, config: ProjectConfig): Promise<void> {
   const useTypeScript = config.frontend?.typescript || config.backend?.typescript
 
-  const eslintConfig: any = {
+  const eslintConfig: ESLintConfig = {
     env: {
       browser: true,
       es2021: true,

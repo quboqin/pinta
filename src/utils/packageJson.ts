@@ -1,7 +1,20 @@
 import { ProjectConfig } from '../types'
 
-export function createPackageJson(config: ProjectConfig): Record<string, any> {
-  const packageJson: Record<string, any> = {
+interface PackageJson {
+  name: string
+  version: string
+  description: string
+  main: string
+  scripts: Record<string, string>
+  keywords: string[]
+  author: string
+  license: string
+  dependencies: Record<string, string>
+  devDependencies: Record<string, string>
+}
+
+export function createPackageJson(config: ProjectConfig): PackageJson {
+  const packageJson: PackageJson = {
     name: config.name,
     version: '0.1.0',
     description: config.description || '',

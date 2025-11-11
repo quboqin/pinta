@@ -1,8 +1,8 @@
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import ora from 'ora'
-import path from 'path'
 import { ProjectGenerator } from '../generators/ProjectGenerator'
+import { validateProjectName, sanitizeProjectName } from '../utils/validation'
 import {
   InitOptions,
   ProjectConfig,
@@ -39,13 +39,32 @@ async function getProjectConfig(
   options: InitOptions,
   projectName?: string
 ): Promise<ProjectConfig> {
+  // Validate and sanitize projectName if provided
+  if (projectName) {
+    const validation = validateProjectName(projectName)
+    if (!validation.valid) {
+      throw new Error(`Invalid project name: ${validation.error}`)
+    }
+    projectName = validation.sanitized
+  }
+
   const answers = await inquirer.prompt([
     {
       type: 'input',
       name: 'name',
       message: 'Project name:',
       default: projectName || 'my-ai-project',
-      when: !projectName
+      when: !projectName,
+      validate: (input: string) => {
+        const result = validateProjectName(input)
+        if (!result.valid) {
+          return result.error || 'Invalid project name'
+        }
+        return true
+      },
+      filter: (input: string) => {
+        return sanitizeProjectName(input)
+      }
     },
     {
       type: 'input',
