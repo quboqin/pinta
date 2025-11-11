@@ -38,6 +38,8 @@ export interface InitOptions {
   backend?: string
   skipGit?: boolean
   skipInstall?: boolean
+  dryRun?: boolean
+  verbose?: boolean
 }
 
 export interface TemplateConfig {

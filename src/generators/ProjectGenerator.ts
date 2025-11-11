@@ -7,6 +7,7 @@ import { createGitIgnore } from '../utils/gitignore'
 import { createDocumentation } from '../utils/documentation'
 import { setupCodeQuality } from '../utils/codeQuality'
 import { setupVSCode } from '../utils/vscode'
+import { createClaudeMd } from '../utils/claudeMd'
 
 export class ProjectGenerator {
   private config: ProjectConfig
@@ -166,6 +167,7 @@ echo "git submodule update --init --recursive"
     // Create documentation
     if (this.config.features.aiWorkflow) {
       await createDocumentation(this.projectPath, this.config)
+      await createClaudeMd(this.projectPath, this.config)
     }
 
     // Create .gitignore

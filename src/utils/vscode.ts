@@ -63,4 +63,46 @@ export async function setupVSCode(projectPath: string): Promise<void> {
   }
 
   await fs.writeJson(path.join(vscodeDir, 'launch.json'), launch, { spaces: 2 })
+
+  // Create tasks.json
+  const tasks = {
+    version: '2.0.0',
+    tasks: [
+      {
+        label: 'npm: build',
+        type: 'npm',
+        script: 'build',
+        group: {
+          kind: 'build',
+          isDefault: true
+        },
+        problemMatcher: ['$tsc']
+      },
+      {
+        label: 'npm: test',
+        type: 'npm',
+        script: 'test',
+        group: {
+          kind: 'test',
+          isDefault: true
+        },
+        problemMatcher: []
+      },
+      {
+        label: 'npm: lint',
+        type: 'npm',
+        script: 'lint',
+        problemMatcher: ['$eslint-stylish']
+      },
+      {
+        label: 'npm: dev',
+        type: 'npm',
+        script: 'dev',
+        isBackground: true,
+        problemMatcher: []
+      }
+    ]
+  }
+
+  await fs.writeJson(path.join(vscodeDir, 'tasks.json'), tasks, { spaces: 2 })
 }

@@ -23,6 +23,8 @@ program
   .option('--backend <framework>', 'Backend framework (express, nestjs, fastify, etc.)')
   .option('--skip-git', 'Skip git initialization')
   .option('--skip-install', 'Skip dependency installation')
+  .option('--dry-run', 'Show what would be generated without creating files')
+  .option('-v, --verbose', 'Show detailed output')
   .action(initCommand)
 
 // Parse command line arguments
