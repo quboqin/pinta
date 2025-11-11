@@ -1,28 +1,40 @@
 # Pinta CLI Tool - Project Requirements
 
+**Project Path**: `/Users/qinqubo/magic/vibe-coding/pinta`
+
+---
+
 ## Overview
+
 Please develop a CLI tool with the following features:
 
 ## Core Features
 
 ### 1. AI-Driven Project Setup
+
 Enables quick setup of AI-driven project frameworks (powered by Claude code generation, Codex, etc.) by inputting project names and requirement descriptions.
 
 ### 2. Technology Stack Selection
+
 Supports selection of frontend and backend technology stack frameworks.
 
 ### 3. Git Repository Configuration
+
 Automatically configures Git repositories with two project structure options:
+
 - **Submodules**: Managing frontend and backend projects separately as submodules
 - **Monorepo**: Using a Monorepo model for unified management
 
 ### 4. AI Design Workflow Integration
+
 Includes built-in configuration for AI design workflows (such as spec kits, BMad, and other solutions).
 
 ### 5. Code Quality Tools
+
 Installs Prettier and ESLint, and configures VS Code for code formatting.
 
 ### 6. Custom Command Configuration
+
 Allows custom command configuration, integrating multi-agent collaboration (MCPS), sub-agents, skills, plugins, and other auxiliary tools.
 
 ---
