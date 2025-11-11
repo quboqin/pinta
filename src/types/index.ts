@@ -8,6 +8,19 @@ export type FrontendFramework = 'react' | 'vue' | 'angular' | 'svelte' | 'next' 
 
 export type BackendFramework = 'express' | 'nestjs' | 'fastify' | 'koa' | 'hapi' | 'none'
 
+export type MCPServer =
+  | 'filesystem'
+  | 'github'
+  | 'context7'
+  | 'git'
+  | 'fetch'
+  | 'postgres'
+  | 'sqlite'
+
+export type HookType = 'pre-commit' | 'post-commit' | 'user-prompt-submit' | 'tool-result'
+
+export type CustomCommand = 'review-pr' | 'generate-tests' | 'refactor' | 'documentation' | 'deploy'
+
 export interface ProjectConfig {
   name: string
   description?: string
@@ -27,6 +40,9 @@ export interface ProjectConfig {
     eslint: boolean
     vscode: boolean
     aiWorkflow: boolean
+    mcpServers?: MCPServer[]
+    hooks?: HookType[]
+    customCommands?: CustomCommand[]
   }
 }
 

@@ -3,12 +3,18 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { ProjectGenerator } from '../generators/ProjectGenerator'
 import { validateProjectName, sanitizeProjectName } from '../utils/validation'
+import { getAvailableMCPServers } from '../utils/mcps'
+import { getAvailableHooks } from '../utils/hooks'
+import { getAvailableCustomCommands } from '../utils/customCommands'
 import {
   InitOptions,
   ProjectConfig,
   ProjectStructure,
   FrontendFramework,
-  BackendFramework
+  BackendFramework,
+  MCPServer,
+  HookType,
+  CustomCommand
 } from '../types'
 
 export async function initCommand(projectName?: string, options: InitOptions = {}): Promise<void> {
@@ -128,6 +134,39 @@ async function getProjectConfig(
       name: 'aiWorkflow',
       message: 'Include AI workflow configuration?',
       default: true
+    },
+    {
+      type: 'checkbox',
+      name: 'mcpServers',
+      message: 'Select MCP servers to install (optional):',
+      choices: getAvailableMCPServers().map((server) => ({
+        name: `${server.name} - ${server.description}`,
+        value: server.name,
+        checked: false
+      })),
+      when: (answers) => answers.aiWorkflow !== false
+    },
+    {
+      type: 'checkbox',
+      name: 'hooks',
+      message: 'Select Claude Code hooks to install (optional):',
+      choices: getAvailableHooks().map((hook) => ({
+        name: `${hook.name} - ${hook.description}`,
+        value: hook.name,
+        checked: false
+      })),
+      when: (answers) => answers.aiWorkflow !== false
+    },
+    {
+      type: 'checkbox',
+      name: 'customCommands',
+      message: 'Select custom commands to install (optional):',
+      choices: getAvailableCustomCommands().map((cmd) => ({
+        name: `${cmd.name} - ${cmd.description}`,
+        value: cmd.name,
+        checked: false
+      })),
+      when: (answers) => answers.aiWorkflow !== false
     }
   ])
 
@@ -157,7 +196,10 @@ async function getProjectConfig(
       prettier: true,
       eslint: true,
       vscode: true,
-      aiWorkflow: answers.aiWorkflow !== false
+      aiWorkflow: answers.aiWorkflow !== false,
+      mcpServers: answers.mcpServers as MCPServer[],
+      hooks: answers.hooks as HookType[],
+      customCommands: answers.customCommands as CustomCommand[]
     }
   }
 

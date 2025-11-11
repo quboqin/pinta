@@ -47,3 +47,18 @@ This project includes a `docs` folder containing the following Markdown document
 - **PRD.md**: Translates user requirements into a detailed Product Requirements Document (PRD)
 - **architecture.md**: As the name suggests, this document is used to design the project's architecture
 - **plan.md**: Breaks down the content of PRD.md into multiple epics for phased execution
+
+---
+
+## New Requirements
+
+### 7. MCPS, Hooks, and Custom Commands Installation
+
+**Requirement**: Allow users to select and install necessary MCPS (Model Context Protocol Servers), hooks, and custom commands into their projects.
+
+**Features to implement**:
+1. **MCPS Selection**: Multi-select interface for popular MCP servers (filesystem, github, context7, etc.)
+2. **Hooks Selection**: Multi-select interface for Claude Code hooks (pre-commit, post-commit, user-prompt-submit, etc.)
+3. **Custom Commands**: Multi-select interface for common slash commands and workflows
+4. **Installation**: Automatically configure and install selected features into the project
+5. **Documentation**: Generate appropriate documentation for installed features

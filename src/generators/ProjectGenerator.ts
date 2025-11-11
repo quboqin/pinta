@@ -9,6 +9,9 @@ import { setupCodeQuality } from '../utils/codeQuality'
 import { setupVSCode } from '../utils/vscode'
 import { createClaudeMd } from '../utils/claudeMd'
 import { copyTemplate, getTsConfigForFramework } from '../utils/templates'
+import { installMCPServers } from '../utils/mcps'
+import { installHooks } from '../utils/hooks'
+import { installCustomCommands } from '../utils/customCommands'
 
 export class ProjectGenerator {
   private config: ProjectConfig
@@ -176,6 +179,21 @@ echo "git submodule update --init --recursive"
     if (this.config.features.aiWorkflow) {
       await createDocumentation(this.projectPath, this.config)
       await createClaudeMd(this.projectPath, this.config)
+    }
+
+    // Install MCP servers
+    if (this.config.features.mcpServers && this.config.features.mcpServers.length > 0) {
+      await installMCPServers(this.projectPath, this.config.features.mcpServers)
+    }
+
+    // Install hooks
+    if (this.config.features.hooks && this.config.features.hooks.length > 0) {
+      await installHooks(this.projectPath, this.config.features.hooks)
+    }
+
+    // Install custom commands
+    if (this.config.features.customCommands && this.config.features.customCommands.length > 0) {
+      await installCustomCommands(this.projectPath, this.config.features.customCommands)
     }
 
     // Create .gitignore
