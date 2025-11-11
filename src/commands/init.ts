@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { ProjectGenerator } from '../generators/ProjectGenerator'
 import { validateProjectName, sanitizeProjectName } from '../utils/validation'
+import { getAvailableDesignFlows } from '../utils/designFlows'
 import { getAvailableMCPServers } from '../utils/mcps'
 import { getAvailableHooks } from '../utils/hooks'
 import { getAvailableCustomCommands } from '../utils/customCommands'
@@ -12,6 +13,7 @@ import {
   ProjectStructure,
   FrontendFramework,
   BackendFramework,
+  DesignFlow,
   MCPServer,
   HookType,
   CustomCommand
@@ -137,6 +139,17 @@ async function getProjectConfig(
     },
     {
       type: 'checkbox',
+      name: 'designFlows',
+      message: 'Select AI design flows to install (optional):',
+      choices: getAvailableDesignFlows().map((flow) => ({
+        name: `${flow.name} - ${flow.description}`,
+        value: flow.name,
+        checked: false
+      })),
+      when: (answers) => answers.aiWorkflow !== false
+    },
+    {
+      type: 'checkbox',
       name: 'mcpServers',
       message: 'Select MCP servers to install (optional):',
       choices: getAvailableMCPServers().map((server) => ({
@@ -197,6 +210,7 @@ async function getProjectConfig(
       eslint: true,
       vscode: true,
       aiWorkflow: answers.aiWorkflow !== false,
+      designFlows: answers.designFlows as DesignFlow[],
       mcpServers: answers.mcpServers as MCPServer[],
       hooks: answers.hooks as HookType[],
       customCommands: answers.customCommands as CustomCommand[]

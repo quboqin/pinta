@@ -9,6 +9,7 @@ import { setupCodeQuality } from '../utils/codeQuality'
 import { setupVSCode } from '../utils/vscode'
 import { createClaudeMd } from '../utils/claudeMd'
 import { copyTemplate, getTsConfigForFramework } from '../utils/templates'
+import { installDesignFlows } from '../utils/designFlows'
 import { installMCPServers } from '../utils/mcps'
 import { installHooks } from '../utils/hooks'
 import { installCustomCommands } from '../utils/customCommands'
@@ -179,6 +180,11 @@ echo "git submodule update --init --recursive"
     if (this.config.features.aiWorkflow) {
       await createDocumentation(this.projectPath, this.config)
       await createClaudeMd(this.projectPath, this.config)
+    }
+
+    // Install design flows
+    if (this.config.features.designFlows && this.config.features.designFlows.length > 0) {
+      await installDesignFlows(this.projectPath, this.config.features.designFlows)
     }
 
     // Install MCP servers

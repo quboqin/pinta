@@ -21,6 +21,8 @@ export type HookType = 'pre-commit' | 'post-commit' | 'user-prompt-submit' | 'to
 
 export type CustomCommand = 'review-pr' | 'generate-tests' | 'refactor' | 'documentation' | 'deploy'
 
+export type DesignFlow = 'bmad' | 'spec-kits'
+
 export interface ProjectConfig {
   name: string
   description?: string
@@ -40,6 +42,7 @@ export interface ProjectConfig {
     eslint: boolean
     vscode: boolean
     aiWorkflow: boolean
+    designFlows?: DesignFlow[]
     mcpServers?: MCPServer[]
     hooks?: HookType[]
     customCommands?: CustomCommand[]

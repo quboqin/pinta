@@ -52,11 +52,26 @@ This project includes a `docs` folder containing the following Markdown document
 
 ## New Requirements
 
+### 6. Design Flows Selection and Installation
+
+**Requirement**: Before MCPS/hooks/commands installation, let users select which AI design flows to use and install them into the project.
+
+**Features to implement**:
+
+1. **Design Flow Selection**: Multi-select interface for AI design workflows
+   - **BMad**: Bottom-up AI design methodology
+   - **Spec Kits**: Specification-driven design approach
+   - Users can select one, both, or neither
+2. **Installation**: Set up selected design flow templates and documentation
+3. **Documentation**: Generate workflow guides and templates for selected flows
+4. **Integration**: Integrate design flows with the existing docs structure (uncle-bob.md, PRD.md, architecture.md, plan.md)
+
 ### 7. MCPS, Hooks, and Custom Commands Installation
 
 **Requirement**: Allow users to select and install necessary MCPS (Model Context Protocol Servers), hooks, and custom commands into their projects.
 
 **Features to implement**:
+
 1. **MCPS Selection**: Multi-select interface for popular MCP servers (filesystem, github, context7, etc.)
 2. **Hooks Selection**: Multi-select interface for Claude Code hooks (pre-commit, post-commit, user-prompt-submit, etc.)
 3. **Custom Commands**: Multi-select interface for common slash commands and workflows
