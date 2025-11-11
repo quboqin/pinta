@@ -17,6 +17,7 @@ program
   .description('Initialize a new AI-driven project')
   .argument('[project-name]', 'Name of the project')
   .option('-t, --template <template>', 'Project template to use')
+  .option('-d, --target-directory <path>', 'Target directory where the project will be created')
   .option('--monorepo', 'Use monorepo structure')
   .option('--submodules', 'Use git submodules structure')
   .option('--frontend <framework>', 'Frontend framework (react, vue, angular, etc.)')

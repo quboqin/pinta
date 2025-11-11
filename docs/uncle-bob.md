@@ -35,7 +35,7 @@ Installs Prettier and ESLint, and configures VS Code for code formatting.
 
 ### 6. Custom Command Configuration
 
-Allows custom command configuration, integrating multi-agent collaboration (MCPS), sub-agents, skills, plugins, and other auxiliary tools.
+Allows custom command configuration, hooks, integrating multi-agent collaboration (MCPS), sub-agents, skills, plugins, and other auxiliary tools.
 
 ---
 

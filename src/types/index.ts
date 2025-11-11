@@ -12,6 +12,7 @@ export interface ProjectConfig {
   name: string
   description?: string
   structure: ProjectStructure
+  targetDirectory?: string
   frontend?: {
     framework: FrontendFramework
     typescript?: boolean
@@ -31,6 +32,7 @@ export interface ProjectConfig {
 
 export interface InitOptions {
   projectName?: string
+  targetDirectory?: string
   template?: string
   monorepo?: boolean
   submodules?: boolean

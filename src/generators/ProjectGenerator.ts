@@ -16,7 +16,8 @@ export class ProjectGenerator {
 
   constructor(config: ProjectConfig) {
     this.config = config
-    this.projectPath = path.resolve(process.cwd(), config.name)
+    const baseDir = config.targetDirectory || process.cwd()
+    this.projectPath = path.resolve(baseDir, config.name)
   }
 
   async generate(): Promise<void> {

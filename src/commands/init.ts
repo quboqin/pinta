@@ -51,6 +51,13 @@ async function getProjectConfig(
   const answers = await inquirer.prompt([
     {
       type: 'input',
+      name: 'targetDirectory',
+      message: 'Target directory where the project will be created:',
+      default: options.targetDirectory || process.cwd(),
+      when: !options.targetDirectory
+    },
+    {
+      type: 'input',
       name: 'name',
       message: 'Project name:',
       default: projectName || 'my-ai-project',
@@ -136,6 +143,7 @@ async function getProjectConfig(
     name: projectName || answers.name,
     description: answers.description,
     structure,
+    targetDirectory: options.targetDirectory || answers.targetDirectory,
     frontend: {
       framework: (options.frontend as FrontendFramework) || answers.frontend,
       typescript: answers.typescript
