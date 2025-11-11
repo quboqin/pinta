@@ -52,19 +52,36 @@ This project includes a `docs` folder containing the following Markdown document
 
 ## New Requirements
 
-### 6. Design Flows Selection and Installation
+### 6. Design Flows Selection and Installation ✅ IMPLEMENTED
 
 **Requirement**: Before MCPS/hooks/commands installation, let users select which AI design flows to use and install them into the project.
 
-**Features to implement**:
+**Implemented Features**:
 
 1. **Design Flow Selection**: Multi-select interface for AI design workflows
-   - **BMad**: Bottom-up AI design methodology
-   - **Spec Kits**: Specification-driven design approach
+   - **BMad Method**: Bottom-up AI design methodology (https://github.com/bmad-code-org/BMAD-METHOD)
+     - Installed via: `npx bmad-method@alpha install`
+     - Creates `bmad/` directory with 12 agents and 34 workflows
+   - **Spec Kits**: Specification-driven design approach (https://github.com/github/spec-kit)
+     - Installed via: `uv tool install specify-cli`
+     - Creates `.specify/` directory with templates and slash commands
    - Users can select one, both, or neither
-2. **Installation**: Set up selected design flow templates and documentation
-3. **Documentation**: Generate workflow guides and templates for selected flows
-4. **Integration**: Integrate design flows with the existing docs structure (uncle-bob.md, PRD.md, architecture.md, plan.md)
+
+2. **Actual Installation**: Executes real installation commands
+   - BMad: Runs `npx bmad-method@alpha install` in project directory
+   - Spec Kits: Checks for `uv`, installs `specify-cli`, runs `specify init`
+   - Error handling with fallback instructions if installation fails
+
+3. **Documentation**: Generates comprehensive installation documentation
+   - `docs/design-flows/<flow>/INSTALLED.md` for each installed flow
+   - Detailed "What Was Installed" sections with directory structures
+   - Getting started guides and links to official documentation
+   - Troubleshooting and manual installation instructions
+
+4. **Prerequisites Check**:
+   - BMad: Requires Node.js and npx (automatically available)
+   - Spec Kits: Checks for `uv` installation, provides install instructions if missing
+   - Creates `.specify/INSTALL_INSTRUCTIONS.md` if `uv` not available
 
 ### 7. MCPS, Hooks, and Custom Commands Installation
 

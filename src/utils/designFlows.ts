@@ -1,325 +1,196 @@
 import fs from 'fs-extra'
 import path from 'path'
+import { execa } from 'execa'
 import { DesignFlow } from '../types'
 
 /**
- * Get design flow documentation content
+ * Get design flow installation info
  */
-function getDesignFlowContent(flow: DesignFlow): { guide: string; template: string } {
-  const contents: Record<DesignFlow, { guide: string; template: string }> = {
+function getDesignFlowInfo(flow: DesignFlow): {
+  name: string
+  repo: string
+  installCmd: string
+  initCmd?: string
+} {
+  const info: Record<
+    DesignFlow,
+    { name: string; repo: string; installCmd: string; initCmd?: string }
+  > = {
     bmad: {
-      guide: `# BMad Design Workflow
-
-BMad (Bottom-up Methodology for AI-Driven Development) is a structured approach to building software with AI assistance.
-
-## Overview
-
-BMad focuses on building applications from the ground up, starting with core functionality and progressively adding features. This methodology is particularly effective when working with AI coding assistants.
-
-## Workflow Phases
-
-### Phase 1: Foundation
-1. **Core Data Structures**: Define your data models and types
-2. **Basic Operations**: Implement CRUD operations
-3. **Validation**: Add input validation and error handling
-
-### Phase 2: Business Logic
-1. **Core Features**: Implement primary business logic
-2. **Service Layer**: Create services that orchestrate operations
-3. **Testing**: Write unit tests for business logic
-
-### Phase 3: API Layer
-1. **Endpoints**: Create API endpoints/routes
-2. **Controllers**: Implement request handlers
-3. **Middleware**: Add authentication, logging, error handling
-
-### Phase 4: User Interface
-1. **Components**: Build UI components
-2. **State Management**: Implement state handling
-3. **Integration**: Connect UI to API
-
-### Phase 5: Enhancement
-1. **Optimization**: Performance improvements
-2. **Polish**: UX enhancements and refinements
-3. **Documentation**: Update docs and comments
-
-## Best Practices
-
-- **Start Small**: Begin with minimal viable features
-- **Iterate Quickly**: Build, test, refine in short cycles
-- **Test Early**: Write tests alongside implementation
-- **Document As You Go**: Update documentation incrementally
-
-## Working with AI
-
-When using BMad with AI assistants:
-
-1. **Clear Requests**: Be specific about what you want to build
-2. **Incremental Changes**: Request one feature at a time
-3. **Review & Validate**: Always review AI-generated code
-4. **Provide Context**: Share relevant code and requirements
-
-## Integration with Project Docs
-
-- Use **uncle-bob.md** to log ideas and requirements for each phase
-- Update **PRD.md** as features are defined
-- Document architecture decisions in **architecture.md**
-- Track progress in **plan.md** by phase
-`,
-      template: `# BMad Project Template
-
-## Current Phase: Phase 1 - Foundation
-
-### Phase Progress
-
-- [ ] Phase 1: Foundation
-  - [ ] Core data structures
-  - [ ] Basic operations
-  - [ ] Validation
-- [ ] Phase 2: Business Logic
-- [ ] Phase 3: API Layer
-- [ ] Phase 4: User Interface
-- [ ] Phase 5: Enhancement
-
-### Phase 1 Tasks
-
-#### Core Data Structures
-- Define your primary entities
-- Create TypeScript interfaces/types
-- Set up database schemas
-
-#### Basic Operations
-- Implement create operations
-- Implement read operations
-- Implement update operations
-- Implement delete operations
-
-#### Validation
-- Add input validation
-- Implement error handling
-- Create validation utilities
-
-### Next Steps
-
-1. Complete Phase 1 tasks
-2. Write tests for core functionality
-3. Document data structures
-4. Move to Phase 2
-
-### Notes
-
-_Add your notes and observations here as you work through each phase_
-`
+      name: 'BMad Method',
+      repo: 'https://github.com/bmad-code-org/BMAD-METHOD',
+      installCmd: 'npx bmad-method@alpha install',
+      initCmd: undefined // Installation handles initialization
     },
     'spec-kits': {
-      guide: `# Spec Kits Design Workflow
-
-Spec Kits is a specification-driven design approach that emphasizes detailed planning and documentation before implementation.
-
-## Overview
-
-Spec Kits focuses on creating comprehensive specifications and design documents before writing code. This methodology ensures alignment between stakeholders and provides clear implementation guidelines.
-
-## Workflow Phases
-
-### Phase 1: Requirements Gathering
-1. **Stakeholder Interviews**: Understand user needs
-2. **Use Cases**: Document user scenarios
-3. **Requirements List**: Create detailed requirements
-
-### Phase 2: Specification Writing
-1. **Functional Specs**: Define what the system should do
-2. **Technical Specs**: Define how it will be built
-3. **API Specs**: Document interfaces and contracts
-
-### Phase 3: Design Documentation
-1. **Architecture Design**: System structure and components
-2. **Data Models**: Database schemas and relationships
-3. **UI/UX Mockups**: Visual designs and user flows
-
-### Phase 4: Review & Validation
-1. **Stakeholder Review**: Get feedback on specs
-2. **Technical Review**: Validate feasibility
-3. **Refinement**: Update based on feedback
-
-### Phase 5: Implementation
-1. **Guided Development**: Build following specs
-2. **Spec Updates**: Adjust specs as needed
-3. **Validation**: Ensure implementation matches specs
-
-## Specification Templates
-
-### Functional Specification Template
-
-\`\`\`markdown
-# Feature: [Feature Name]
-
-## Overview
-Brief description of the feature
-
-## User Stories
-- As a [user type], I want to [action] so that [benefit]
-
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Dependencies
-- List of dependencies
-
-## Technical Considerations
-- Performance requirements
-- Security requirements
-- Scalability needs
-\`\`\`
-
-### API Specification Template
-
-\`\`\`markdown
-# API: [Endpoint Name]
-
-## Endpoint
-\`POST /api/resource\`
-
-## Request
-\`\`\`json
-{
-  "field": "value"
-}
-\`\`\`
-
-## Response
-\`\`\`json
-{
-  "id": "uuid",
-  "status": "success"
-}
-\`\`\`
-
-## Error Codes
-- 400: Bad Request
-- 401: Unauthorized
-- 500: Server Error
-\`\`\`
-
-## Best Practices
-
-- **Be Specific**: Write detailed, unambiguous specifications
-- **Visual Aids**: Use diagrams and mockups
-- **Iterative**: Refine specs based on feedback
-- **Living Documents**: Update specs as requirements change
-
-## Working with AI
-
-When using Spec Kits with AI assistants:
-
-1. **Share Specs**: Provide complete specifications to AI
-2. **Request Reviews**: Ask AI to review specs for completeness
-3. **Guided Implementation**: Reference specs during development
-4. **Spec-First**: Always update specs before implementing changes
-
-## Integration with Project Docs
-
-- **uncle-bob.md**: Raw ideas and initial requirements
-- **PRD.md**: Product requirements derived from specs
-- **architecture.md**: Technical architecture specifications
-- **plan.md**: Implementation plan based on specs
-- **docs/specs/**: Detailed feature specifications (create this folder)
-`,
-      template: `# Spec Kits Project Template
-
-## Specifications Status
-
-### Completed Specs
-- [ ] Requirements document
-- [ ] Architecture specification
-- [ ] API specification
-- [ ] Data model specification
-- [ ] UI/UX specification
-
-### In Progress
-_List specifications currently being written_
-
-### Pending
-_List specifications that need to be created_
-
-## Specification Checklist
-
-### Requirements Phase
-- [ ] Stakeholder interviews completed
-- [ ] Use cases documented
-- [ ] Requirements prioritized
-- [ ] Acceptance criteria defined
-
-### Design Phase
-- [ ] Architecture diagram created
-- [ ] Component interfaces defined
-- [ ] Data models documented
-- [ ] API contracts specified
-
-### Review Phase
-- [ ] Technical review completed
-- [ ] Stakeholder approval received
-- [ ] Feasibility validated
-- [ ] Dependencies identified
-
-### Implementation Phase
-- [ ] Development started
-- [ ] Unit tests aligned with specs
-- [ ] Integration tests defined
-- [ ] Documentation updated
-
-## Specification Template
-
-### [Specification Name]
-
-**Status**: [Draft | Review | Approved | Implemented]
-
-**Last Updated**: [Date]
-
-**Owner**: [Name]
-
-#### Summary
-_Brief description of what this specification covers_
-
-#### Details
-_Detailed specification content_
-
-#### Dependencies
-_Related specifications and dependencies_
-
-#### Notes
-_Additional notes and considerations_
-
----
-
-## Next Steps
-
-1. Complete pending specifications
-2. Get stakeholder approval
-3. Begin implementation following specs
-4. Keep specs updated as implementation progresses
-
-### Notes
-
-_Add your notes about the specification process here_
-`
+      name: 'Spec Kits',
+      repo: 'https://github.com/github/spec-kit',
+      installCmd: 'uv tool install specify-cli --from git+https://github.com/github/spec-kit.git',
+      initCmd: 'specify init --here --ai claude --force'
     }
   }
 
-  return contents[flow]
+  return info[flow]
 }
 
 /**
- * Get design flow description
+ * Check if command exists
  */
-function getDesignFlowDescription(flow: DesignFlow): string {
-  const descriptions: Record<DesignFlow, string> = {
-    bmad: 'Bottom-up Methodology for AI-Driven Development - Build progressively from foundation',
-    'spec-kits': 'Specification-driven design - Plan comprehensively before implementation'
+async function commandExists(command: string): Promise<boolean> {
+  try {
+    await execa('which', [command])
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Install BMad Method
+ */
+async function installBMad(projectPath: string): Promise<void> {
+  console.log('📦 Installing BMad Method...')
+
+  try {
+    // Run npx bmad-method@alpha install
+    await execa('npx', ['bmad-method@alpha', 'install'], {
+      cwd: projectPath,
+      stdio: 'inherit'
+    })
+
+    console.log('✅ BMad Method installed successfully!')
+  } catch (error) {
+    console.error('❌ Failed to install BMad Method:', error)
+    throw new Error(
+      'BMad Method installation failed. Please install manually using: npx bmad-method@alpha install'
+    )
+  }
+}
+
+/**
+ * Install Spec Kits
+ */
+async function installSpecKits(projectPath: string): Promise<void> {
+  console.log('📦 Installing Spec Kits...')
+
+  // Check if uv is installed
+  const hasUv = await commandExists('uv')
+
+  if (!hasUv) {
+    console.warn('⚠️  uv is not installed. Installing Spec Kits requires uv.')
+    console.log('Please install uv first: curl -LsSf https://astral.sh/uv/install.sh | sh')
+    console.log('Or visit: https://docs.astral.sh/uv/')
+
+    // Create instructions file
+    const instructionsPath = path.join(projectPath, '.specify', 'INSTALL_INSTRUCTIONS.md')
+    await fs.ensureDir(path.dirname(instructionsPath))
+    await fs.writeFile(
+      instructionsPath,
+      `# Spec Kits Installation Instructions
+
+Spec Kits requires \`uv\` to be installed. Please follow these steps:
+
+## 1. Install uv
+
+**macOS/Linux:**
+\`\`\`bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+\`\`\`
+
+**Windows:**
+\`\`\`powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+\`\`\`
+
+Or visit: https://docs.astral.sh/uv/
+
+## 2. Install Spec Kits
+
+Once uv is installed, run:
+
+\`\`\`bash
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+\`\`\`
+
+## 3. Initialize Spec Kits
+
+In your project directory, run:
+
+\`\`\`bash
+specify init --here --ai claude --force
+\`\`\`
+
+## More Information
+
+- GitHub: https://github.com/github/spec-kit
+- Documentation: https://github.github.io/spec-kit/
+`
+    )
+
+    console.log(`📄 Installation instructions saved to: .specify/INSTALL_INSTRUCTIONS.md`)
+    return
   }
 
-  return descriptions[flow]
+  try {
+    // Install specify-cli using uv
+    console.log('Installing specify-cli tool...')
+    await execa(
+      'uv',
+      ['tool', 'install', 'specify-cli', '--from', 'git+https://github.com/github/spec-kit.git'],
+      {
+        stdio: 'inherit'
+      }
+    )
+
+    // Initialize in project directory
+    console.log('Initializing Spec Kits in project...')
+    await execa('specify', ['init', '--here', '--ai', 'claude', '--force'], {
+      cwd: projectPath,
+      stdio: 'inherit'
+    })
+
+    console.log('✅ Spec Kits installed successfully!')
+  } catch (error) {
+    console.error('❌ Failed to install Spec Kits:', error)
+
+    // Create fallback instructions
+    const instructionsPath = path.join(projectPath, '.specify', 'INSTALL_INSTRUCTIONS.md')
+    await fs.ensureDir(path.dirname(instructionsPath))
+    await fs.writeFile(
+      instructionsPath,
+      `# Spec Kits Installation Failed
+
+Automatic installation failed. Please install manually:
+
+## Manual Installation Steps
+
+### 1. Install specify-cli
+\`\`\`bash
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+\`\`\`
+
+### 2. Initialize in this project
+\`\`\`bash
+cd ${projectPath}
+specify init --here --ai claude --force
+\`\`\`
+
+## Alternative: Use without installation
+\`\`\`bash
+uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai claude --force
+\`\`\`
+
+## More Information
+- GitHub: https://github.com/github/spec-kit
+- Documentation: https://github.github.io/spec-kit/
+
+## Error Details
+${error}
+`
+    )
+
+    console.log(`📄 Manual installation instructions saved to: .specify/INSTALL_INSTRUCTIONS.md`)
+  }
 }
 
 /**
@@ -330,116 +201,206 @@ export async function installDesignFlows(projectPath: string, flows: DesignFlow[
     return
   }
 
-  // Create design-flows directory
+  console.log('\n🎨 Installing Design Flows...\n')
+
+  // Create design-flows directory for documentation
   const designFlowsDir = path.join(projectPath, 'docs', 'design-flows')
   await fs.ensureDir(designFlowsDir)
 
   // Install each design flow
   for (const flow of flows) {
-    const { guide, template } = getDesignFlowContent(flow)
-    const flowDir = path.join(designFlowsDir, flow)
-    await fs.ensureDir(flowDir)
+    const info = getDesignFlowInfo(flow)
+    console.log(`\n📚 Installing ${info.name}...`)
+    console.log(`   Repository: ${info.repo}`)
+    console.log(`   Command: ${info.installCmd}\n`)
 
-    // Write guide
-    const guidePath = path.join(flowDir, 'GUIDE.md')
-    await fs.writeFile(guidePath, guide)
+    try {
+      if (flow === 'bmad') {
+        await installBMad(projectPath)
+      } else if (flow === 'spec-kits') {
+        await installSpecKits(projectPath)
+      }
 
-    // Write template
-    const templatePath = path.join(flowDir, 'TEMPLATE.md')
-    await fs.writeFile(templatePath, template)
+      // Create installation documentation
+      const flowDir = path.join(designFlowsDir, flow)
+      await fs.ensureDir(flowDir)
+
+      const installDoc = `# ${info.name} - Installed
+
+This project has ${info.name} installed and configured.
+
+## Repository
+${info.repo}
+
+## Installation Command Used
+\`\`\`bash
+${info.installCmd}
+\`\`\`
+
+${info.initCmd ? `## Initialization Command\n\`\`\`bash\n${info.initCmd}\n\`\`\`\n` : ''}
+
+## What Was Installed
+
+${
+  flow === 'bmad'
+    ? `- \`bmad/\` directory with the complete BMad framework
+- Core agents and workflows
+- BMad Method module (BMM) with 12 specialized agents
+- 34 workflows for AI-driven agile development
+- Configuration in \`bmad/_cfg/\` for customization
+
+## Getting Started
+
+1. Load any agent from \`bmad/\` in your AI assistant (Claude Code, Cursor, etc.)
+2. Run \`*workflow-init\` to set up your project workflow
+3. Follow the Quick Start guide: https://github.com/bmad-code-org/BMAD-METHOD#-quick-start
+
+## Documentation
+
+- Complete documentation: https://github.com/bmad-code-org/BMAD-METHOD
+- Quick Start: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmm/docs/quick-start.md
+- Agents Guide: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmm/docs/agents-guide.md`
+    : `- \`.specify/\` directory with Spec Kit templates and scripts
+- Project constitution template
+- Spec, plan, and task templates
+- AI agent slash commands (/speckit.*)
+- Scripts for managing features and specifications
+
+## Getting Started
+
+1. Launch your AI assistant in the project directory
+2. Use \`/speckit.constitution\` to create project principles
+3. Use \`/speckit.specify\` to create specifications
+4. Use \`/speckit.plan\` to create technical plans
+5. Use \`/speckit.tasks\` to break down into tasks
+6. Use \`/speckit.implement\` to execute implementation
+
+## Documentation
+
+- Complete guide: https://github.com/github/spec-kit/blob/main/spec-driven.md
+- Repository: https://github.com/github/spec-kit
+- Documentation: https://github.github.io/spec-kit/`
+}
+
+## Support
+
+For issues or questions:
+- GitHub Issues: ${info.repo}/issues
+- Documentation: ${info.repo}#readme
+`
+
+      await fs.writeFile(path.join(flowDir, 'INSTALLED.md'), installDoc)
+    } catch (error) {
+      console.error(`❌ Failed to install ${info.name}:`, error)
+      // Continue with other flows even if one fails
+    }
   }
 
   // Create overview README
   const readmeContent = generateDesignFlowsReadme(flows)
   const readmePath = path.join(designFlowsDir, 'README.md')
   await fs.writeFile(readmePath, readmeContent)
+
+  console.log('\n✅ Design Flows installation complete!\n')
 }
 
 /**
  * Generate README for installed design flows
  */
 function generateDesignFlowsReadme(flows: DesignFlow[]): string {
-  let readme = `# Design Flows
+  let readme = `# Design Flows - Installed
 
-This project is configured with the following AI design workflows:
+This project has the following AI design workflows installed:
 
 `
 
   flows.forEach((flow) => {
-    const flowName = flow === 'bmad' ? 'BMad' : 'Spec Kits'
+    const info = getDesignFlowInfo(flow)
+    const flowName = flow === 'bmad' ? 'BMad Method' : 'Spec Kits'
     readme += `## ${flowName}\n\n`
     readme += `${getDesignFlowDescription(flow)}\n\n`
-    readme += `**Guide**: [${flow}/GUIDE.md](./${flow}/GUIDE.md)\n\n`
-    readme += `**Template**: [${flow}/TEMPLATE.md](./${flow}/TEMPLATE.md)\n\n`
+    readme += `**Repository**: [${info.repo}](${info.repo})\n\n`
+    readme += `**Installation Guide**: [${flow}/INSTALLED.md](./${flow}/INSTALLED.md)\n\n`
   })
 
-  readme += `## How to Use Design Flows
+  readme += `## Installed Tools
 
-Each design flow includes:
+`
 
-1. **GUIDE.md** - Comprehensive methodology guide
-   - Workflow phases
-   - Best practices
-   - Integration with project docs
-   - Tips for working with AI
+  if (flows.includes('bmad')) {
+    readme += `### BMad Method
 
-2. **TEMPLATE.md** - Practical working template
-   - Phase tracking
-   - Task checklists
-   - Progress monitoring
-   - Notes section
+The BMad Method has been installed in the \`bmad/\` directory.
 
-## Choosing a Design Flow
+**Key Components:**
+- **bmad/core/** - Core framework with BMad Master agent
+- **bmad/bmm/** - BMad Method module (12 agents, 34 workflows)
+- **bmad/_cfg/** - Your customization directory
 
-### Use BMad when:
-- Building from scratch with AI assistance
-- Iterating quickly on features
-- Prototyping and exploring ideas
-- Working on greenfield projects
+**Next Steps:**
+1. Load any agent from \`bmad/\` in your AI assistant
+2. Run \`*workflow-init\` to initialize your workflow
+3. Choose your planning track (Quick Flow, BMad Method, or Enterprise)
 
-### Use Spec Kits when:
-- Requirements are well-defined
-- Multiple stakeholders need alignment
-- Complex system with many integrations
-- Documentation is critical
+**Documentation:** [bmad/INSTALLED.md](./bmad/INSTALLED.md)
 
-### Use Both when:
-- Large project with multiple phases
-- Some features need detailed specs, others need exploration
-- Team uses different approaches for different components
+`
+  }
 
-## Integration with Project Documentation
+  if (flows.includes('spec-kits')) {
+    readme += `### Spec Kits
 
-Your project includes structured documentation:
+Spec Kits has been installed in the \`.specify/\` directory.
 
-- **docs/uncle-bob.md** - Ideas and requirements logbook
-- **docs/PRD.md** - Product Requirements Document
-- **docs/architecture.md** - Technical architecture
-- **docs/plan.md** - Implementation plan
+**Key Components:**
+- **.specify/memory/** - Project constitution and memory
+- **.specify/scripts/** - Automation scripts
+- **.specify/templates/** - Spec, plan, and task templates
 
-Design flows complement these documents by providing:
-- Structured methodologies
-- Phase-based workflows
-- AI collaboration guidelines
+**Next Steps:**
+1. Launch your AI assistant in the project directory
+2. Use \`/speckit.constitution\` to establish project principles
+3. Use \`/speckit.specify\` to create feature specifications
+4. Follow the spec-driven development workflow
 
-## Getting Started
+**Documentation:** [spec-kits/INSTALLED.md](./spec-kits/INSTALLED.md)
 
-1. Read the GUIDE.md for your chosen design flow(s)
-2. Copy TEMPLATE.md content to start your workflow
-3. Integrate with existing project docs
-4. Follow the methodology as you build
+`
+  }
 
-## Tips for Success
+  readme += `## Using Multiple Flows
 
-- **Stay Consistent**: Follow the chosen methodology
-- **Update Regularly**: Keep templates and docs current
-- **Adapt as Needed**: Methodologies are guidelines, not rigid rules
-- **Leverage AI**: Use AI assistants to help with each phase
+You can use both methodologies together:
 
-For more information on working with Claude Code, see the project's CLAUDE.md file.
+- **BMad for rapid development**: Use BMad's Quick Flow or iterative approach for prototyping
+- **Spec Kits for structured planning**: Use Spec Kits for complex features requiring detailed specifications
+- **Hybrid approach**: Start with Spec Kits for planning, then use BMad workflows for implementation
+
+## Support & Resources
+
+- **BMad Method**: https://github.com/bmad-code-org/BMAD-METHOD
+- **Spec Kits**: https://github.com/github/spec-kit
+- **Discord (BMad)**: https://discord.gg/gk8jAdXWmj
+
+## Troubleshooting
+
+If you encounter any installation issues, check the individual INSTALLED.md files for each flow for detailed troubleshooting steps and manual installation instructions.
 `
 
   return readme
+}
+
+/**
+ * Get design flow description
+ */
+function getDesignFlowDescription(flow: DesignFlow): string {
+  const descriptions: Record<DesignFlow, string> = {
+    bmad: 'Bottom-up Methodology for AI-Driven Development - Build progressively from foundation with specialized AI agents',
+    'spec-kits':
+      'Specification-driven design - Plan comprehensively with executable specifications before implementation'
+  }
+
+  return descriptions[flow]
 }
 
 /**
@@ -447,7 +408,7 @@ For more information on working with Claude Code, see the project's CLAUDE.md fi
  */
 export function getAvailableDesignFlows(): Array<{ name: DesignFlow; description: string }> {
   return [
-    { name: 'bmad', description: 'Bottom-up AI-driven development' },
-    { name: 'spec-kits', description: 'Specification-driven design' }
+    { name: 'bmad', description: 'BMad Method - AI-driven agile development (npx install)' },
+    { name: 'spec-kits', description: 'Spec Kits - Specification-driven development (requires uv)' }
   ]
 }
