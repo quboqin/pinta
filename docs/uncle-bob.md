@@ -131,3 +131,75 @@ This project includes a `docs` folder containing the following Markdown document
      - Configuration requirements
      - Best practices
      - Links to official documentation
+
+### 8. Interactive Project Setup Command and Skill ✅ IMPLEMENTED
+
+**Requirement**: Create a Claude Code command and skill that allows users to interactively set up project structures with code quality tools.
+
+**Implemented Features**:
+
+1. **Custom Slash Command: `/setup-project`**
+   - Created `.claude/commands/setup-project.md`
+   - Interactive project scaffolding workflow
+   - Step-by-step guidance for project creation
+   - Supports all Pinta project structures and frameworks
+
+2. **Project Scaffolding Skill**
+   - Created `.claude/skills/project-scaffolding.md`
+   - Comprehensive project setup expertise
+   - Framework-specific configurations
+   - Best practices guidance
+
+3. **Interactive Selection Process**
+   - Uses AskUserQuestion tool for user choices:
+     - Project structure (standard/monorepo/submodules)
+     - Frontend framework (React, Vue, Angular, Svelte, Next.js, Nuxt, or none)
+     - Backend framework (Express, NestJS, Fastify, Koa, or none)
+     - TypeScript preference (yes/no)
+
+4. **Complete Project Creation**
+   - Directory structure based on selections
+   - package.json with appropriate scripts and dependencies
+   - TypeScript configuration (if selected)
+   - ESLint with framework-specific rules:
+     - React: react-hooks rules, JSX configuration
+     - Vue: vue3-recommended rules
+     - Backend: TypeScript strict rules
+   - Prettier configuration with sensible defaults:
+     - No semicolons, single quotes, 2-space tabs
+     - 100 character line width
+   - VS Code settings for format-on-save:
+     - Prettier as default formatter
+     - ESLint auto-fix on save
+     - TypeScript/JavaScript formatting
+   - Recommended VS Code extensions:
+     - ESLint, Prettier
+     - Framework-specific (React snippets, Vue Volar, etc.)
+     - Error Lens, Path Intellisense
+   - .gitignore with comprehensive patterns
+   - README.md with project documentation
+
+5. **Monorepo Support**
+   - Turborepo configuration (turbo.json)
+   - Workspace setup in root package.json
+   - Pipeline configuration for build, dev, lint tasks
+   - Proper directory structure (packages/, apps/)
+
+6. **Documentation**
+   - `.claude/USAGE.md`: Complete usage guide
+   - Examples for different project types
+   - Troubleshooting section
+   - Customization guidance
+
+**Usage Example**:
+```
+User: /setup-project
+
+Claude will then:
+1. Ask about project structure
+2. Ask about frontend framework
+3. Ask about backend framework
+4. Ask about TypeScript
+5. Create complete project with all configurations
+6. Provide next steps and commands
+```
